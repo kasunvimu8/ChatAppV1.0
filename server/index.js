@@ -17,6 +17,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('user left !');
     })
+
+    socket.on('join', ({name, room}, callback) => {
+        console.log(name, room);
+    })
 })
 
 app.use(router);
