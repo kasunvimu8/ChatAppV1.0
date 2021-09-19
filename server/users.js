@@ -9,41 +9,25 @@ const addUser = ({id, name, room}) => {
         return {error: 'Username is taken'}
     }
 
-    const user = { id, processedName, processedRoom};
+    const user = { id, name: processedName, room:processedRoom};
     users.push(user);
 
-    return user;
+    return {user};
 }
 
 const removeUser = (id) => {
     const index = users.findIndex((user) => user.id === id);
-
-    if (index !== -1) {
-        return {error: 'No user exists'};
-    } else {
-        // users = users.filter(user => user.id !== id);
         return users.splice(index, 1)[0];
-    }
 }
 
 const getUser = (id) => {
     const user = users.find((user) => user.id === id);
-
-    if (user !== -1) {
-        return {error: 'No user exists'};
-    } else {
-        return user;
-    }
+    return user;
 }
 
 const getUsersInRoom = (room) => {
     const roomUsers = users.find((user) => user.room === room);
-
-    if (roomUsers !== -1) {
-        return {error: 'No users in the room'};
-    } else {
-        return roomUsers;
-    }
+    return roomUsers;
 }
 
-module.export = { addUser, removeUser, getUser, getUsersInRoom };
+module.exports = { addUser, removeUser, getUser, getUsersInRoom };

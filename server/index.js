@@ -8,14 +8,24 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"]
+    }
+  });
 
 
 io.on('connection', (socket) => {
-    console.log('socket !');
-
+    
     socket.on('disconnect', () => {
         console.log('user left !');
+        const user = removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left`})
+            io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
+        }
     })
 
     socket.on('join', ({name, room}, callback) => {
@@ -27,12 +37,17 @@ io.on('connection', (socket) => {
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!`});
 
         socket.join(user.room);
+        io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
+        callback();
     });
 
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
 
-        io.to(user.room).emit('message', { user: user, text: message });
+        console.log('received messsage ..', message);
+        console.log('user', user);
+
+        io.to(user.room).emit('message', { user: user.name, text: message });
         callback();
     })
 })
