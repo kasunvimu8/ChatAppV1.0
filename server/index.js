@@ -3,20 +3,17 @@ const socketio = require('socket.io');
 const http = require('http');
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users.js');
 const router = require('./router');
+const cors = require('cors');
 
 const PORT = process.env.PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server, {
-    cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"]
-    }
-  });
+const io = socketio(server);
 
+app.use(cors());
 
-io.on('connection', (socket) => {
+io.on('connect', (socket) => {
     
     socket.on('disconnect', () => {
         console.log('user left !');
